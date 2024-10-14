@@ -32,7 +32,7 @@ The Ransomware Detection Tool is a web-based application designed to assist in d
 
 4. **Run the application:**
 
-        python app.py
+        python app/app.py
 
 5. **Open your browser and navigate to http://127.0.0.1:5000/.**
 
