@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ransomware Logs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link id="light-theme" rel="stylesheet" href="{{ url_for('static', filename='light-theme.css') }}">
+    <link id="dark-theme" rel="stylesheet" href="{{ url_for('static', filename='dark-theme.css') }}" disabled>
+    <style>
+        /* Loading Spinner CSS */
+        #loading {
+            display: none; /* Initially hidden */
+            text-align: center;
+        }
+        #loading-spinner {
+        display: none; /* Initially hidden */
+        text-align: center; /* Center the spinner */
+        position: fixed; /* Fixed positioning */
+        top: 50%; /* Center vertically */
+        left: 50%; /* Center horizontally */
+        transform: translate(-50%, -50%); /* Adjust to truly center */
+        z-index: 1000; /* Bring it above other elements */
+    }
+    
+        .spinner {
+        border: 4px solid #f3f3f3; /* Light grey */
+        border-top: 4px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 2s linear infinite;
+    }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Smooth fade-in for logs */
+        li {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            color: #000; /* Default text color in light mode */
+        }
+        li.show {
+            opacity: 1;
+        }
+
+        /* Dark Theme CSS */
+        body.dark-theme {
+            background-color: #121212;
+            color: #e0e0e0; /* Light text for dark theme */
+        }
+
+        body.dark-theme li {
+            color: #000000; /* Logs are visible in dark theme */
+        }
+
+        /* Theme Toggle Icon Style */
+        #theme-toggle {
+    position: fixed; /* Fixed position to stay in place while scrolling */
+    top: 5px; /* Distance from the top */
+    right: 850px; /* Distance from the right */
+    font-size: 24px; /* Font size */
+    background: none; /* No background */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    color: #000; /* Icon color for light theme */
+    transition: color 0.3s ease-in-out; /* Smooth transition for color */
+}
+
+body.dark-theme #theme-toggle {
+    color: #e0e0e0; /* Icon color for dark theme */
+}
+
+        /* Search bar and button styling */
+        input[type="text"] {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* Additional loading spinner for search submission */
+        #loading-spinner {
+            display: none;
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Logs</h1>
+
+    <!-- Search Form -->
+    <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateSearch()">
+        <div class="input-container">
+            <input type="text" id="search-input" name="query" placeholder="Search logs..." required>
+            <h1 style="
+                position: relative;
+                font-size: 13px;
+                top: -1px;
+                left: -71px;
+                color: #9d9d9d;
+                font-family: monospace;
+            ">use ransomware, malware
+            </h1>
+        </div>
+        <div class="date-container">
+            <h1 style="
+               color: #93b2d3;
+               font-family: ui-monospace;
+            ">start
+            </h1>
+            <input type="date" name="start_date" id="start-date" class="date-input" placeholder="Start Date">
+            <h1 style="
+               color: #93b2d3;
+                font-family: ui-monospace;
+             ">end</h1>
+            <input type="date" name="end_date" id="end-date" class="date-input" placeholder="End Date">
+        </div>
+        <button type="submit">Search</button>
+    </form>
+      
+    
+<button id="theme-toggle">☀️</button>
+
+
+
+
+    <!-- Log List -->
+{% if logs %}
+<ul id="log-list">
+    {% for log in logs %}
+        <li>
+            <span class="log-timestamp">{{ log[0] }}</span> - 
+            <span class="log-message">{{ log[1] }}</span>
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p style="text-align: center; color: red;">No logs found for your search.</p>
+{% endif %}
+
+
+    
+    <!-- Loading Spinner for search -->
+    <div id="loading-spinner">
+        <div class="spinner"></div>
+        Searching logs...
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading">
+        <div class="spinner"></div>
+        Loading more logs...
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('search', page=page-1, query=query) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page }} of {{ (total_logs // 10) + (1 if total_logs % 10 > 0 else 0) }}</span>
+        {% if total_logs > page * 10 %}
+            <a href="{{ url_for('search', page=page+1, query=query) }}">Next</a>
+        {% endif %}
+    </div>    
+
+    <button id="load-more" onclick="loadMoreLogs()">Load More</button>
+
+    <footer style="text-align: center; margin-top: 20px; color: #555;">
+        <p>Created by <strong>ss4m0</strong></p>
+    </footer>
+
+
+    <script>
+
+        function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+    return new Date(dateString).toLocaleString('en-US', options);
+}
+
+
+        function highlightTerms(logs, query) {
+    return logs.map(log => {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return log[1].replace(regex, '<span class="highlight">$1</span>');
+    });
+}
+
+        // Function to set the theme based on local storage
+        function setTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            const lightThemeLink = document.getElementById('light-theme');
+            const darkThemeLink = document.getElementById('dark-theme');
+    
+            if (theme === 'dark') {
+                lightThemeLink.disabled = true;
+                darkThemeLink.disabled = false;
+                document.body.classList.add("dark-theme"); // Add class for body
+            } else {
+                lightThemeLink.disabled = false;
+                darkThemeLink.disabled = true;
+                document.body.classList.remove("dark-theme"); // Remove class for body
+            }
+    
+            console.log("Current theme set to:", theme); // Debugging message
+        }
+    
+        // Save the theme to local storage and apply it
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            setTheme(); // Apply the new theme
+    
+            console.log("Theme toggled to:", newTheme); // Debugging message
+        }
+    
+        // Event listener for form submission to show loading spinner
+        document.querySelector("form").addEventListener("submit", function() {
+            document.getElementById("loading-spinner").style.display = "block";
+        });
+    
+        // Apply the theme on page load
+        setTheme();
+    
+        // Event listener for the theme toggle button
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    
+        // Real-time search functionality
+        const searchInput = document.getElementById("search-input");
+        searchInput.addEventListener("input", function() {
+            const query = searchInput.value.toLowerCase();
+            const logItems = document.querySelectorAll("#log-list li");
+    
+            logItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = "list-item"; // Show item
+                    item.classList.add("show"); // Fade in if matched
+                } else {
+                    item.style.display = "none"; // Hide item
+                }
+            });
+        });
+    
+        // Function to load more logs with loading spinner
+        let offset = 10;  // Start by loading the next set of logs
+        function loadMoreLogs() {
+            const loadingIndicator = document.getElementById("loading");
+            loadingIndicator.style.display = "block"; // Show loading indicator
+    
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `/more_logs?offset=${offset}`, true);  // Fetch more logs starting from the current offset
+            xhr.onload = function () {
+                loadingIndicator.style.display = "none"; // Hide loading indicator
+    
+                if (xhr.status === 200) {
+                    const logs = JSON.parse(xhr.responseText);  // Parse the JSON response
+                    if (logs.length > 0) {
+                        logs.forEach(log => {
+                            const logList = document.getElementById("log-list");
+                            const listItem = document.createElement("li");
+                            listItem.innerHTML = `${log[0]} - ${log[1]}`;  // Use innerHTML to allow highlighted keywords
+                            logList.appendChild(listItem);
+    
+                            // Add a small timeout for the fade-in effect
+                            setTimeout(() => {
+                                listItem.classList.add("show"); // Add class to trigger fade-in
+                            }, 10); // Timeout ensures the transition is applied
+                        });
+                        offset += logs.length;  // Update the offset for the next set of logs
+                    } else {
+                        document.getElementById("load-more").textContent = "No more logs";
+                        document.getElementById("load-more").disabled = true;  // Disable button when no more logs
+                    }
+                }
+            };
+            xhr.send();  // Send the request
+        }
+    
+        // Search input validation
+        function validateSearch() {
+            const query = document.getElementById('search-input').value;
+            const invalidChars = /[^a-zA-Z0-9 ]/g;  // Adjust this regex to allow/disallow certain characters
+            if (invalidChars.test(query)) {
+                alert('Please enter a valid search term.');
+                return false;
+            }
+            return true;
+        }
+    
+        // Show loading spinner on search submit
+        document.querySelector("form").addEventListener("submit", function() {
+            document.getElementById("loading-spinner").style.display = "block";
+        });
+    </script>
+
+    
+    
+</body>
+</html>

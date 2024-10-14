@@ -1,0 +1,302 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    top: 5px;
+    color: #333;
+    position: relative;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 5px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Log List Styling */
+#log-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+#log-list li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#log-list li:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Button Styling */
+#load-more {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #93b2d3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#load-more:hover {
+    background-color: #ffffff;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    background: #0268d4;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination a:hover {
+    background: #0056b3;
+}
+
+.pagination span {
+    margin: 0 10px;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    width: 300px; /* Adjust the width as needed */
+    font-size: 16px;
+}
+
+form button {
+    padding: 10px 15px;
+    background-color: #007bff; /* Blue background */
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center; /* Center the form */
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px; /* Space between input and button */
+    width: 300px; /* Set a fixed width */
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #3498db; /* Change this to your desired hover color */
+    color: white; /* Change text color on hover */
+}
+
+#log-list li:hover {
+    background-color: #f0f0f0; /* Light gray on hover */
+}
+
+
+#log-list li {
+    opacity: 10; /* Start invisible */
+    transition: opacity 0.5s ease; /* Smooth transition for opacity */
+    margin: 5px 0; /* Space between log items */
+}
+
+/* Fade-in effect when log items are added */
+#log-list li.show {
+    opacity: 1; /* Fully visible */
+}
+
+#loading {
+    display: none; /* Initially hidden */
+    text-align: center;
+    transition: opacity 0.5s ease; /* Smooth transition for loading indicator */
+}
+
+.loading-show {
+    display: block; /* Show loading indicator */
+    opacity: 1; /* Fully visible */
+}
+
+.loading-hide {
+    opacity: 0; /* Fade out */
+}
+
+body.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+    
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+form {
+    display: flex;
+    flex-direction: column; /* Stack inputs vertically */
+    align-items: center; /* Center align items */
+    gap: 15px; /* Add space between elements */
+    margin: 20px auto; /* Center form horizontally */
+    width: 100%; /* Full width for form */
+    max-width: 500px; /* Maximum width for the form */
+}
+
+.date-container {
+    display: flex; /* Flexbox for date inputs */
+    gap: 10px; /* Space between date inputs */
+    width: 100%; /* Full width for date container */
+}
+
+.date-input {
+    padding: 10px; /* Add padding */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+    flex: 1; /* Allow inputs to grow */
+    width: 100%; /* Full width for date input */
+}
+
+button {
+    padding: 10px 15px; /* Padding for the button */
+    background-color: #3498db; /* Button background */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    font-size: 16px; /* Button font size */
+    width: 100%; /* Full width for button */
+}
+
+button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.log-timestamp {
+    font-weight: bold; /* Make the timestamp bold */
+    color: #3498db; /* Change the color of the timestamp */
+}
+
+.date-container {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: space-between; /* Space out the dates */
+    font-size: 14px; /* Adjust font size for readability */
+    margin-bottom: 5px; /* Add some space below each log entry */
+}
+
+.log-timestamp {
+    font-weight: bold; /* Make the timestamp bold */
+    color: #3498db; /* Change the color of the timestamp */
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    #log-list {
+        width: 100%;
+    }
+
+    #load-more {
+        width: 100%;
+    }
+
+    #log-list {
+        font-size: 14px; /* Smaller text on small screens */
+    }
+
+    button {
+        width: 100%; /* Full-width buttons on small screens */
+    }
+}
+
